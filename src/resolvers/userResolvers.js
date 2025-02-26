@@ -1,21 +1,23 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import User from "../models/User.js";
+
 import authMiddleware from "../middlewares/auth.js";
+import User from './../models/user.js';
 
 dotenv.config();
  
 const userResolvers = {
   Query: {
-    getProfile: async (_, __, context) => {
-
+    getProfile: async (_, args, context) => {
       const user = authMiddleware(context);
       return await User.findById(user.id);
     },
   },
   Mutation: {
-    register: async (_, { name, email, password, profilePicture },) => {
+    register: async (_, { name, email, password, profilePicture },context) => {
+      console.log(context.req.file);
+      
       const existingUser = await User.findOne({ email });
       if (existingUser) throw new Error("User already exists");
 
